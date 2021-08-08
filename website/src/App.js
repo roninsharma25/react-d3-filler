@@ -1,6 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
-import Visualizations from './components/Visualizations';
+import HomePage from './components/HomePage';
 
 function App() {
   return (
@@ -8,7 +8,7 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
 
-        <Visualizations />
+        <HomePage />
       </header>
     </div>
   );
