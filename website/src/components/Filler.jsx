@@ -49,6 +49,7 @@ export default class Filler extends Component {
             .attr('height', (data) => (data.size))
             .attr('width', (data) => (data.size))
             .style('fill', (data) => (data.color))
+            .attr('stroke', 'black')
             .on('click', (data) => {
                 if (data.target.__data__.flag) console.log(data.target.__data__.color)
                 else console.log("NOTHING: " + data.target.__data__.color)
