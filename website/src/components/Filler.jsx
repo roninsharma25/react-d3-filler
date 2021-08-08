@@ -5,6 +5,8 @@ import * as d3 from 'd3';
 export default class Filler extends Component {
     constructor(props) {
         super(props);
+
+        this.changeColor = this.changeColor.bind(this);
     }
 
     componentDidMount() {
@@ -51,11 +53,25 @@ export default class Filler extends Component {
             .style('fill', (data) => (data.color))
             .attr('stroke', 'black')
             .on('click', (data) => {
-                if (data.target.__data__.flag) console.log(data.target.__data__.color)
+                if (data.target.__data__.flag) this.changeColor(data.target.__data__.color) 
+                //console.log(data.target.__data__.color)
                 else console.log("NOTHING: " + data.target.__data__.color)
             })
-
     }
+
+    changeColor(color) {
+        let box = d3.selectAll('rect')._groups[0][0];
+        
+        console.log(box);
+        console.log(typeof(box));
+
+        d3.select(box)
+            .transition()
+            .duration(2000)
+            .style('fill', color)
+        
+    }    
+
     render() {
         return (
             <div className="Vis"></div>
