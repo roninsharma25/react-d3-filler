@@ -3,8 +3,17 @@
 }
 
 .App-logo {
-  height: 40vmin;
+  height: 20vmin;
   pointer-events: none;
+  position: relative;
+  left: -70vmin;
+  top: 7vmin;
+}
+
+.Vis {
+  position: relative;
+  top: -10vmin;
+  left: 0vmin;
 }
 
 @media (prefers-reduced-motion: no-preference) {
