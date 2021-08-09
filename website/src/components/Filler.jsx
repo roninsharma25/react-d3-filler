@@ -27,11 +27,11 @@ export default class Filler extends Component {
                 {'x': 400, 'y': 450, 'size': 50, 'color': colors[4], 'flag': true},
                 {'x': 475, 'y': 450, 'size': 50, 'color': colors[5], 'flag': true},
                 {'x': 550, 'y': 450, 'size': 50, 'color': colors[6], 'flag': true}
-            ],
-
+            ]
         }
 
         this.changeColor = this.changeColor.bind(this);
+        this.getAdjacentIndices = this.getAdjacentIndices.bind(this);
     }
 
     componentDidMount() {
@@ -60,20 +60,49 @@ export default class Filler extends Component {
                 if (data.target.__data__.flag) this.changeColor(data.target.__data__.color, 1) 
                 else console.log("NOTHING: " + data.target.__data__.color)
             })
+        
+        this.getAdjacentIndices(4);
     }
 
     changeColor(color, rectIndex) {
         let box = d3.selectAll('rect')._groups[0][rectIndex];
 
-        console.log(box);
-        console.log(typeof(box));
-
         d3.select(box)
             .transition()
             .duration(2000)
             .style('fill', color)
+    }
+
+    getAdjacentIndices(currentIndex) {
+        let dim = 3;
+        let maxIndex = 8;
+
+        let above = currentIndex - dim;
+        let below = currentIndex + dim;
+        let right = currentIndex + 1;
+        let left = currentIndex - 1;
+
+        let indices = [];
+
+        if (above >= 0) {
+            indices.push(above);
+        }
+
+        if (below <= maxIndex) {
+            indices.push(below);
+        }
+
+        if (currentIndex % dim !== dim - 1) {
+            indices.push(right);
+        }
+
+        if (currentIndex % dim !== 0) {
+            indices.push(left);
+        }
+
+        console.log(indices);
         
-    }    
+    }
 
     render() {
         return (
