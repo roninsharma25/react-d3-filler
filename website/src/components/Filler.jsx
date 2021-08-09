@@ -6,7 +6,6 @@ export default class Filler extends Component {
     constructor(props) {
         super(props);
         let colors = ['red', 'blue', 'green', 'black', 'purple', 'white', 'yellow'];
-
         this.state = {
             data: [
                 {'x': 200, 'y': 100, 'size': 100, 'flag': false, 'color': colors[Math.floor(Math.random() * colors.length)]}, 
