@@ -9,7 +9,7 @@ export default class HomePage extends Component {
 
     render() {
         return (
-            <Filler />
+            <Filler height={600} width={700} border='5px solid white'/>
         )
     }
 }
