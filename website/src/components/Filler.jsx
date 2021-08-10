@@ -48,12 +48,6 @@ export default class Filler extends Component {
         let titleSize = '25px';
 
         d3.select('.Vis').select('text')
-            .attr('x', this.props.width / 4)
-            .attr('y', 50)
-            .attr('text-anchor', 'middle')
-            .style('fill', textColor)
-            .style('font-size', titleSize)
-            .style('text-decoration', 'underline')
             .text('Player 1 Score: ' + this.state.player1Score)
     }
     
