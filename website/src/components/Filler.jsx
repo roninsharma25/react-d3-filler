@@ -26,7 +26,9 @@ export default class Filler extends Component {
                 {'x': 400, 'y': 450, 'size': 50, 'color': colors[4], 'flag': true},
                 {'x': 475, 'y': 450, 'size': 50, 'color': colors[5], 'flag': true},
                 {'x': 550, 'y': 450, 'size': 50, 'color': colors[6], 'flag': true}
-            ]
+            ],
+            player1Boxes: [6],
+            player1Score: 1
         }
 
         this.changeColor = this.changeColor.bind(this);
@@ -56,20 +58,47 @@ export default class Filler extends Component {
             .style('fill', (data) => (data.color))
             .attr('stroke', 'black')
             .on('click', (data) => {
-                if (data.target.__data__.flag) this.changeColor(data.target.__data__.color, 1) 
+                if (data.target.__data__.flag) this.update(data.target.__data__.color)//this.changeColor(data.target.__data__.color, 1) 
                 else console.log("NOTHING: " + data.target.__data__.color)
             })
-        
-        this.getAdjacentIndices(4);
+
     }
 
-    changeColor(color, rectIndex) {
-        let box = d3.selectAll('rect')._groups[0][rectIndex];
+    update(color) {
+        let prevPlayer1Boxes = this.state.player1Boxes;
+        console.log(prevPlayer1Boxes);
+        let allIndices = prevPlayer1Boxes;
+        allIndices.forEach(num => allIndices = allIndices.concat(this.getAdjacentIndices(num)));
 
-        d3.select(box)
-            .transition()
-            .duration(2000)
-            .style('fill', color)
+        let newIndices = prevPlayer1Boxes.concat(this.getNewIndices(allIndices, color));
+        newIndices = newIndices.filter((item, index) => newIndices.indexOf(item) === index);
+        console.log(newIndices);
+
+        this.changeColor(newIndices, color);
+        this.setState({player1Boxes: newIndices})
+    }
+
+    getNewIndices(indices, inputColor) {
+        let allRects = d3.selectAll('rect')._groups[0];
+        let newRects = [];
+
+        indices.forEach((num) => {
+            let color = allRects[num].__data__.color;
+            let temp = color === inputColor ? newRects.push(num) : null;
+        })
+
+        return newRects;
+    }
+
+    changeColor(rectIndices, color) {
+        rectIndices.forEach((rectIndex) => {
+            let rect = d3.selectAll('rect')._groups[0][rectIndex];
+
+            d3.select(rect)
+                .transition()
+                .duration(2000)
+                .style('fill', color)
+        })
     }
 
     getAdjacentIndices(currentIndex) {
@@ -99,8 +128,7 @@ export default class Filler extends Component {
             indices.push(left);
         }
 
-        console.log(indices);
-        
+        return indices;        
     }
 
     render() {
