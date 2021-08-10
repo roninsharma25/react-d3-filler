@@ -27,8 +27,8 @@ export default class Filler extends Component {
                 {'x': 475, 'y': 450, 'size': 50, 'color': colors[5], 'flag': true},
                 {'x': 550, 'y': 450, 'size': 50, 'color': colors[6], 'flag': true}
             ],
-            player1Boxes: [6],
-            player1Score: 1
+            player1Score: 1,
+            player1Boxes: [6]
         }
 
         this.changeColor = this.changeColor.bind(this);
@@ -36,7 +36,29 @@ export default class Filler extends Component {
     }
 
     componentDidMount() {
-        let { data, constantData } = this.state;
+        this.main()
+    }
+
+    componentDidUpdate() {
+        this.updateText();
+    }
+
+    updateText() {
+        let textColor = 'white';
+        let titleSize = '25px';
+
+        d3.select('.Vis').select('text')
+            .attr('x', this.props.width / 4)
+            .attr('y', 50)
+            .attr('text-anchor', 'middle')
+            .style('fill', textColor)
+            .style('font-size', titleSize)
+            .style('text-decoration', 'underline')
+            .text('Player 1 Score: ' + this.state.player1Score)
+    }
+    
+    main() {
+        let { data, constantData, player1Score } = this.state;
         let { height, width, border } = this.props;
 
         let svg = d3.select('.Vis')
@@ -61,6 +83,18 @@ export default class Filler extends Component {
                 if (data.target.__data__.flag) this.update(data.target.__data__.color)//this.changeColor(data.target.__data__.color, 1) 
                 else console.log("NOTHING: " + data.target.__data__.color)
             })
+        
+        let textColor = 'white';
+        let titleSize = '25px';
+    
+        svg.append('text')
+            .attr('x', this.props.width / 4)
+            .attr('y', 50)
+            .attr('text-anchor', 'middle')
+            .style('fill', textColor)
+            .style('font-size', titleSize)
+            .style('text-decoration', 'underline')
+            .text('Player 1 Score: ' + this.state.player1Score)
 
     }
 
@@ -76,6 +110,7 @@ export default class Filler extends Component {
 
         this.changeColor(newIndices, color);
         this.setState({player1Boxes: newIndices})
+        this.setState({player1Score: newIndices.length})
     }
 
     getNewIndices(indices, inputColor) {
