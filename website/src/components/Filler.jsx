@@ -7,17 +7,17 @@ export default class Filler extends Component {
         super(props);
         let colors = ['red', 'blue', 'green', 'black', 'purple', 'white', 'yellow'];
         this.state = {
-            data: [
+            /*data: [
                 {'x': 200, 'y': 100, 'size': 100, 'flag': false, 'color': colors[Math.floor(Math.random() * colors.length)]}, 
-                {'x': 300, 'y': 100, 'size': 100, 'color': colors[Math.floor(Math.random() * colors.length)]},
-                {'x': 400, 'y': 100, 'size': 100, 'color': colors[Math.floor(Math.random() * colors.length)]},
-                {'x': 200, 'y': 200, 'size': 100, 'color': colors[Math.floor(Math.random() * colors.length)]},
-                {'x': 300, 'y': 200, 'size': 100, 'color': colors[Math.floor(Math.random() * colors.length)]},
-                {'x': 400, 'y': 200, 'size': 100, 'color': colors[Math.floor(Math.random() * colors.length)]},
-                {'x': 200, 'y': 300, 'size': 100, 'color': colors[Math.floor(Math.random() * colors.length)]},
-                {'x': 300, 'y': 300, 'size': 100, 'color': colors[Math.floor(Math.random() * colors.length)]},
-                {'x': 400, 'y': 300, 'size': 100, 'color': colors[Math.floor(Math.random() * colors.length)]}
-            ],
+                {'x': 300, 'y': 100, 'size': 100, 'flag': false, 'color': colors[Math.floor(Math.random() * colors.length)]},
+                {'x': 400, 'y': 100, 'size': 100, 'flag': false, 'color': colors[Math.floor(Math.random() * colors.length)]},
+                {'x': 200, 'y': 200, 'size': 100, 'flag': false, 'color': colors[Math.floor(Math.random() * colors.length)]},
+                {'x': 300, 'y': 200, 'size': 100, 'flag': false, 'color': colors[Math.floor(Math.random() * colors.length)]},
+                {'x': 400, 'y': 200, 'size': 100, 'flag': false, 'color': colors[Math.floor(Math.random() * colors.length)]},
+                {'x': 200, 'y': 300, 'size': 100, 'flag': false, 'color': colors[Math.floor(Math.random() * colors.length)]},
+                {'x': 300, 'y': 300, 'size': 100, 'flag': false, 'color': colors[Math.floor(Math.random() * colors.length)]},
+                {'x': 400, 'y': 300, 'size': 100, 'flag': false, 'color': colors[Math.floor(Math.random() * colors.length)]}
+            ],*/
             constantData: [
                 {'x': 100, 'y': 450, 'size': 50, 'color': colors[0], 'flag': true}, 
                 {'x': 175, 'y': 450, 'size': 50, 'color': colors[1], 'flag': true},
@@ -28,7 +28,9 @@ export default class Filler extends Component {
                 {'x': 550, 'y': 450, 'size': 50, 'color': colors[6], 'flag': true}
             ],
             player1Score: 1,
-            player1Boxes: [6]
+            player2Score: 1,
+            player1Boxes: [6],
+            player2Boxes: [2]
         }
 
         this.changeColor = this.changeColor.bind(this);
@@ -36,11 +38,31 @@ export default class Filler extends Component {
     }
 
     componentDidMount() {
+        //this.setState({data: this.generateData(...[[3, 3], [200, 100], [100, 100], 100])});
         this.main()
     }
 
     componentDidUpdate() {
         this.updateText();
+    }
+
+    generateData(dim, start, delta, size, random = true) {
+        let colors = ['red', 'blue', 'green', 'black', 'purple', 'white', 'yellow'];
+        let data = [];
+        let x;
+        let y = start[1];
+        let color;
+
+        for (let i = 0; i < dim[0]; i++) {
+            x = start[0];
+            for (let j = 0; j < dim[1]; j++ ) {
+                color = random ? colors[Math.floor(Math.random() * colors.length)] : colors[j];
+                data.push({'x': x, 'y': y, 'size': size, 'flag': false, 'color': color});
+                x += delta[0];
+            }
+            y += delta[1];
+          }
+        return data;
     }
 
     updateText() {
@@ -53,6 +75,8 @@ export default class Filler extends Component {
     
     main() {
         let { data, constantData, player1Score } = this.state;
+        data = this.generateData(...[[10, 10], [150, 75], [40, 40], 40]);
+        constantData = this.generateData(...[[1, 7], [50, 515], [90, 100], 50, false]);
         let { height, width, border } = this.props;
 
         let svg = d3.select('.Vis')
@@ -74,7 +98,7 @@ export default class Filler extends Component {
             .style('fill', (data) => (data.color))
             .attr('stroke', 'black')
             .on('click', (data) => {
-                if (data.target.__data__.flag) this.update(data.target.__data__.color)//this.changeColor(data.target.__data__.color, 1) 
+                if (data.target.__data__.flag) this.update(data.target.__data__.color)
                 else console.log("NOTHING: " + data.target.__data__.color)
             })
         
