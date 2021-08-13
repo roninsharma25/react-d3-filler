@@ -17,7 +17,7 @@ export default class Filler extends Component {
                 {'x': 200, 'y': 300, 'size': 100, 'flag': false, 'color': colors[Math.floor(Math.random() * colors.length)]},
                 {'x': 300, 'y': 300, 'size': 100, 'flag': false, 'color': colors[Math.floor(Math.random() * colors.length)]},
                 {'x': 400, 'y': 300, 'size': 100, 'flag': false, 'color': colors[Math.floor(Math.random() * colors.length)]}
-            ],*/
+            ],
             constantData: [
                 {'x': 100, 'y': 450, 'size': 50, 'color': colors[0], 'flag': true}, 
                 {'x': 175, 'y': 450, 'size': 50, 'color': colors[1], 'flag': true},
@@ -26,10 +26,10 @@ export default class Filler extends Component {
                 {'x': 400, 'y': 450, 'size': 50, 'color': colors[4], 'flag': true},
                 {'x': 475, 'y': 450, 'size': 50, 'color': colors[5], 'flag': true},
                 {'x': 550, 'y': 450, 'size': 50, 'color': colors[6], 'flag': true}
-            ],
+            ],*/
             player1Score: 1,
             player2Score: 1,
-            player1Boxes: [6],
+            player1Boxes: [90],
             player2Boxes: [2]
         }
 
@@ -46,7 +46,7 @@ export default class Filler extends Component {
         this.updateText();
     }
 
-    generateData(dim, start, delta, size, random = true) {
+    generateData(dim, start, delta, size, flag = false) {
         let colors = ['red', 'blue', 'green', 'black', 'purple', 'white', 'yellow'];
         let data = [];
         let x;
@@ -56,8 +56,8 @@ export default class Filler extends Component {
         for (let i = 0; i < dim[0]; i++) {
             x = start[0];
             for (let j = 0; j < dim[1]; j++ ) {
-                color = random ? colors[Math.floor(Math.random() * colors.length)] : colors[j];
-                data.push({'x': x, 'y': y, 'size': size, 'flag': false, 'color': color});
+                color = flag ? colors[j] : colors[Math.floor(Math.random() * colors.length)];
+                data.push({'x': x, 'y': y, 'size': size, 'flag': flag, 'color': color});
                 x += delta[0];
             }
             y += delta[1];
@@ -76,7 +76,7 @@ export default class Filler extends Component {
     main() {
         let { data, constantData, player1Score } = this.state;
         data = this.generateData(...[[10, 10], [150, 75], [40, 40], 40]);
-        constantData = this.generateData(...[[1, 7], [50, 515], [90, 100], 50, false]);
+        constantData = this.generateData(...[[1, 7], [50, 515], [90, 100], 50, true]);
         let { height, width, border } = this.props;
 
         let svg = d3.select('.Vis')
@@ -118,12 +118,13 @@ export default class Filler extends Component {
 
     update(color) {
         let prevPlayer1Boxes = this.state.player1Boxes;
-        console.log(prevPlayer1Boxes);
+        //console.log(prevPlayer1Boxes);
         let allIndices = prevPlayer1Boxes;
         allIndices.forEach(num => allIndices = allIndices.concat(this.getAdjacentIndices(num)));
 
         let newIndices = prevPlayer1Boxes.concat(this.getNewIndices(allIndices, color));
         newIndices = newIndices.filter((item, index) => newIndices.indexOf(item) === index);
+        console.log('NEW');
         console.log(newIndices);
 
         this.changeColor(newIndices, color);
@@ -144,6 +145,8 @@ export default class Filler extends Component {
     }
 
     changeColor(rectIndices, color) {
+        console.log('CHANGE');
+        console.log(rectIndices);
         rectIndices.forEach((rectIndex) => {
             let rect = d3.selectAll('rect')._groups[0][rectIndex];
 
@@ -155,8 +158,8 @@ export default class Filler extends Component {
     }
 
     getAdjacentIndices(currentIndex) {
-        let dim = 3;
-        let maxIndex = 8;
+        let dim = 10;
+        let maxIndex = 99;
 
         let above = currentIndex - dim;
         let below = currentIndex + dim;
