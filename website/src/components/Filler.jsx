@@ -17,10 +17,6 @@ export default class Filler extends Component {
 
     componentDidMount() {
         this.main()
-        console.log('TEXT');
-        //console.log(d3.select('.Vis').selectAll('text')._groups[0][this.state.currentPlayer]);
-        console.log(d3.select('.player1'))
-        console.log(d3.selectAll('text'))
     }
 
     componentDidUpdate() {
@@ -47,9 +43,6 @@ export default class Filler extends Component {
     }
 
     updateText() {
-        let textColor = 'white';
-        let titleSize = '25px';
-
         if (this.state.currentPlayer) { // Player 2
             d3.select('.Vis').select('.player2')
                 .text('Player 2 Score: ' + this.state.playerScores[1])
@@ -57,16 +50,11 @@ export default class Filler extends Component {
             d3.select('.player1')
                 .text('Player 1 Score: ' + this.state.playerScores[0])
         }
-
-        //d3.select('.Vis').select('text')
-        //d3.select('.Vis').selectAll('text')._groups[0][this.state.currentPlayer]
-        //    .text('Player' + (this.state.currentPlayer + 1) + ' Score: ' + this.state.playerScores[0]) //player1Score)
     }
     
     main() {
-        let { data, constantData, player1Score } = this.state;
-        data = this.generateData(...[[10, 10], [150, 75], [40, 40], 40]);
-        constantData = this.generateData(...[[1, 7], [50, 515], [90, 100], 50, true]);
+        let data = this.generateData(...[[10, 10], [150, 75], [40, 40], 40]);
+        let constantData = this.generateData(...[[1, 7], [50, 515], [90, 100], 50, true]);
         let { height, width, border } = this.props;
 
         let svg = d3.select('.Vis')
@@ -120,8 +108,7 @@ export default class Filler extends Component {
     }
 
     update(color) {
-        let prevPlayer1Boxes = this.state.playerBoxes[this.state.currentPlayer]; //[0];//player1Boxes;
-        //console.log(prevPlayer1Boxes);
+        let prevPlayer1Boxes = this.state.playerBoxes[this.state.currentPlayer];
         let allIndices = prevPlayer1Boxes;
         allIndices.forEach(num => allIndices = allIndices.concat(this.getAdjacentIndices(num)));
 
@@ -143,9 +130,6 @@ export default class Filler extends Component {
             this.setState({playerScores: [newIndices.length, playerScores[1]]});
         }
         this.setState({currentPlayer: 1 - this.state.currentPlayer});
-
-        //this.setState({playerBoxes: [newIndices, playerBoxes[1]]});
-        //this.setState({playerScores: [newIndices.length, playerScores[1]]});
     }
 
     getNewIndices(indices, inputColor) {
