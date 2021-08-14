@@ -9,7 +9,8 @@ export default class Filler extends Component {
             playerScores: [1, 1],
             playerBoxes: [[90], [9]],
             currentPlayer: 0,
-            prevColors: ['','']
+            prevColors: ['',''],
+            playerArrows: ['','']
         }
 
         this.changeColor = this.changeColor.bind(this);
@@ -125,6 +126,39 @@ export default class Filler extends Component {
             .text('Player 2 Score: ' + playerScores[1])
             .attr('class', 'player2')
 
+        let player1Arrow = svg.append('line')
+            .attr('x1', 25)
+            .attr('y1', 45)
+            .attr('x2', 75)
+            .attr('y2', 45)
+            .attr('stroke-width', 5)
+            .attr('stroke', 'white')
+            .attr('marker-end', 'url(#triangle)')
+            //.style('visibility', 'hidden')
+        
+        let player2Arrow = svg.append('line')
+            .attr('x1', 370)
+            .attr('y1', 45)
+            .attr('x2', 420)
+            .attr('y2', 45)
+            .attr('stroke-width', 5)
+            .attr('stroke', 'white')
+            .attr('marker-end', 'url(#triangle)')
+            .style('visibility', 'hidden')
+        
+        svg.append("svg:defs").append("svg:marker")
+            .attr("id", "triangle")
+            .attr("refX", 6)
+            .attr("refY", 6)
+            .attr("markerWidth", 30)
+            .attr("markerHeight", 30)
+            .attr("markerUnits", "userSpaceOnUse")
+            .attr("orient", "auto")
+            .append("path")
+            .attr("d", "M 0 0 12 6 0 12 3 6")
+            .style("fill", "red");
+        
+        this.setState({playerArrows: [player1Arrow, player2Arrow]})
     }
 
     update(color) {
@@ -154,6 +188,10 @@ export default class Filler extends Component {
             this.setState({playerBoxes: [newIndices, playerBoxes[1]]});
             this.setState({playerScores: [newIndices.length, playerScores[1]]});
         }
+        this.state.playerArrows[this.state.currentPlayer]
+            .style('visibility', 'hidden')
+        this.state.playerArrows[1 - this.state.currentPlayer]
+            .style('visibility', 'visible')
         this.setState({currentPlayer: 1 - this.state.currentPlayer});
     }
 
