@@ -8,7 +8,8 @@ export default class Filler extends Component {
         this.state = {
             playerScores: [1, 1],
             playerBoxes: [[90], [9]],
-            currentPlayer: 0
+            currentPlayer: 0,
+            prevColors: ['','']
         }
 
         this.changeColor = this.changeColor.bind(this);
@@ -23,18 +24,37 @@ export default class Filler extends Component {
         this.updateText();
     }
 
+    // Resets all opacities and changes the specified ones
+    changeOpacity(changeColors) {
+        let colors = ['red', 'blue', 'green', 'black', 'purple', 'white', 'yellow'];
+        let allObjs = d3.selectAll('.bottom')._groups[0];
+        colors.forEach((color, index) => {
+            d3.select(allObjs[index])
+                .style('opacity', 1.0)
+        })
+        
+        changeColors.forEach((entry) => {
+            if (entry !== '') {
+                d3.select(allObjs[colors.indexOf(entry)])
+                    .style('opacity', 0.1)
+            }
+        })
+    }
+
     generateData(dim, start, delta, size, flag = false) {
         let colors = ['red', 'blue', 'green', 'black', 'purple', 'white', 'yellow'];
         let data = [];
         let x;
         let y = start[1];
         let color;
+        let className;
 
         for (let i = 0; i < dim[0]; i++) {
             x = start[0];
             for (let j = 0; j < dim[1]; j++ ) {
                 color = flag ? colors[j] : colors[Math.floor(Math.random() * colors.length)];
-                data.push({'x': x, 'y': y, 'size': size, 'flag': flag, 'color': color});
+                className = flag ? 'bottom' : 'top';
+                data.push({'x': x, 'y': y, 'size': size, 'flag': flag, 'color': color, 'className': className});
                 x += delta[0];
             }
             y += delta[1];
@@ -68,13 +88,14 @@ export default class Filler extends Component {
             .enter()
             .append('rect')
         
-        let squareAttributes = squares
+        squares
             .attr('x', (data) => (data.x))
             .attr('y', (data) => (data.y))
             .attr('height', (data) => (data.size))
             .attr('width', (data) => (data.size))
             .style('fill', (data) => (data.color))
             .attr('stroke', 'black')
+            .attr('class', (data) => (data.className))
             .on('click', (data) => {
                 if (data.target.__data__.flag) this.update(data.target.__data__.color)
             })
@@ -119,9 +140,13 @@ export default class Filler extends Component {
 
         let playerScores = this.state.playerScores;
         let playerBoxes = this.state.playerBoxes;
+        let prevColors = this.state.prevColors;
 
         this.changeColor(newIndices, color);
-
+        let updatedColors = this.state.currentPlayer ? [prevColors[0], color] : [color, prevColors[1]];
+        this.changeOpacity(updatedColors)
+        this.setState({prevColors: updatedColors})
+        
         if (this.state.currentPlayer) { // Player 2 
             this.setState({playerBoxes: [playerBoxes[0], newIndices]});
             this.setState({playerScores: [playerScores[0], newIndices.length]});
@@ -137,8 +162,7 @@ export default class Filler extends Component {
         let newRects = [];
 
         indices.forEach((num) => {
-            let color = allRects[num].__data__.color;
-            let temp = color === inputColor ? newRects.push(num) : null;
+            let temp = allRects[num].__data__.color === inputColor ? newRects.push(num) : null;
         })
 
         return newRects;
