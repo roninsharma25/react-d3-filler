@@ -5,32 +5,10 @@ import * as d3 from 'd3';
 export default class Filler extends Component {
     constructor(props) {
         super(props);
-        let colors = ['red', 'blue', 'green', 'black', 'purple', 'white', 'yellow'];
         this.state = {
-            /*data: [
-                {'x': 200, 'y': 100, 'size': 100, 'flag': false, 'color': colors[Math.floor(Math.random() * colors.length)]}, 
-                {'x': 300, 'y': 100, 'size': 100, 'flag': false, 'color': colors[Math.floor(Math.random() * colors.length)]},
-                {'x': 400, 'y': 100, 'size': 100, 'flag': false, 'color': colors[Math.floor(Math.random() * colors.length)]},
-                {'x': 200, 'y': 200, 'size': 100, 'flag': false, 'color': colors[Math.floor(Math.random() * colors.length)]},
-                {'x': 300, 'y': 200, 'size': 100, 'flag': false, 'color': colors[Math.floor(Math.random() * colors.length)]},
-                {'x': 400, 'y': 200, 'size': 100, 'flag': false, 'color': colors[Math.floor(Math.random() * colors.length)]},
-                {'x': 200, 'y': 300, 'size': 100, 'flag': false, 'color': colors[Math.floor(Math.random() * colors.length)]},
-                {'x': 300, 'y': 300, 'size': 100, 'flag': false, 'color': colors[Math.floor(Math.random() * colors.length)]},
-                {'x': 400, 'y': 300, 'size': 100, 'flag': false, 'color': colors[Math.floor(Math.random() * colors.length)]}
-            ],
-            constantData: [
-                {'x': 100, 'y': 450, 'size': 50, 'color': colors[0], 'flag': true}, 
-                {'x': 175, 'y': 450, 'size': 50, 'color': colors[1], 'flag': true},
-                {'x': 250, 'y': 450, 'size': 50, 'color': colors[2], 'flag': true},
-                {'x': 325, 'y': 450, 'size': 50, 'color': colors[3], 'flag': true},
-                {'x': 400, 'y': 450, 'size': 50, 'color': colors[4], 'flag': true},
-                {'x': 475, 'y': 450, 'size': 50, 'color': colors[5], 'flag': true},
-                {'x': 550, 'y': 450, 'size': 50, 'color': colors[6], 'flag': true}
-            ],*/
-            player1Score: 1,
-            player2Score: 1,
-            player1Boxes: [90],
-            player2Boxes: [2]
+            playerScores: [1, 1],
+            playerBoxes: [[90], [9]],
+            currentPlayer: 0
         }
 
         this.changeColor = this.changeColor.bind(this);
@@ -38,8 +16,11 @@ export default class Filler extends Component {
     }
 
     componentDidMount() {
-        //this.setState({data: this.generateData(...[[3, 3], [200, 100], [100, 100], 100])});
         this.main()
+        console.log('TEXT');
+        //console.log(d3.select('.Vis').selectAll('text')._groups[0][this.state.currentPlayer]);
+        console.log(d3.select('.player1'))
+        console.log(d3.selectAll('text'))
     }
 
     componentDidUpdate() {
@@ -69,8 +50,17 @@ export default class Filler extends Component {
         let textColor = 'white';
         let titleSize = '25px';
 
-        d3.select('.Vis').select('text')
-            .text('Player 1 Score: ' + this.state.player1Score)
+        if (this.state.currentPlayer) { // Player 2
+            d3.select('.Vis').select('.player2')
+                .text('Player 2 Score: ' + this.state.playerScores[1])
+        } else { // Player 1
+            d3.select('.player1')
+                .text('Player 1 Score: ' + this.state.playerScores[0])
+        }
+
+        //d3.select('.Vis').select('text')
+        //d3.select('.Vis').selectAll('text')._groups[0][this.state.currentPlayer]
+        //    .text('Player' + (this.state.currentPlayer + 1) + ' Score: ' + this.state.playerScores[0]) //player1Score)
     }
     
     main() {
@@ -104,6 +94,8 @@ export default class Filler extends Component {
         
         let textColor = 'white';
         let titleSize = '25px';
+
+        let playerScores = this.state.playerScores;
     
         svg.append('text')
             .attr('x', this.props.width / 4)
@@ -112,12 +104,23 @@ export default class Filler extends Component {
             .style('fill', textColor)
             .style('font-size', titleSize)
             .style('text-decoration', 'underline')
-            .text('Player 1 Score: ' + this.state.player1Score)
+            .text('Player 1 Score: ' + playerScores[0])
+            .attr('class', 'player1')
+        
+        svg.append('text')
+            .attr('x', this.props.width * 3 / 4)
+            .attr('y', 50)
+            .attr('text-anchor', 'middle')
+            .style('fill', textColor)
+            .style('font-size', titleSize)
+            .style('text-decoration', 'underline')
+            .text('Player 2 Score: ' + playerScores[1])
+            .attr('class', 'player2')
 
     }
 
     update(color) {
-        let prevPlayer1Boxes = this.state.player1Boxes;
+        let prevPlayer1Boxes = this.state.playerBoxes[this.state.currentPlayer]; //[0];//player1Boxes;
         //console.log(prevPlayer1Boxes);
         let allIndices = prevPlayer1Boxes;
         allIndices.forEach(num => allIndices = allIndices.concat(this.getAdjacentIndices(num)));
@@ -127,9 +130,22 @@ export default class Filler extends Component {
         console.log('NEW');
         console.log(newIndices);
 
+        let playerScores = this.state.playerScores;
+        let playerBoxes = this.state.playerBoxes;
+
         this.changeColor(newIndices, color);
-        this.setState({player1Boxes: newIndices})
-        this.setState({player1Score: newIndices.length})
+
+        if (this.state.currentPlayer) { // Player 2 
+            this.setState({playerBoxes: [playerBoxes[0], newIndices]});
+            this.setState({playerScores: [playerScores[0], newIndices.length]});
+        } else { // Player 1
+            this.setState({playerBoxes: [newIndices, playerBoxes[1]]});
+            this.setState({playerScores: [newIndices.length, playerScores[1]]});
+        }
+        this.setState({currentPlayer: 1 - this.state.currentPlayer});
+
+        //this.setState({playerBoxes: [newIndices, playerBoxes[1]]});
+        //this.setState({playerScores: [newIndices.length, playerScores[1]]});
     }
 
     getNewIndices(indices, inputColor) {
