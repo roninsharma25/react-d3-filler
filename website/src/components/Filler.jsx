@@ -10,7 +10,8 @@ export default class Filler extends Component {
             playerBoxes: [[90], [9]],
             currentPlayer: 0,
             prevColors: ['',''],
-            playerArrows: ['','']
+            playerArrows: ['',''],
+            winner: null
         }
 
         this.changeColor = this.changeColor.bind(this);
@@ -134,7 +135,6 @@ export default class Filler extends Component {
             .attr('stroke-width', 5)
             .attr('stroke', 'white')
             .attr('marker-end', 'url(#triangle)')
-            //.style('visibility', 'hidden')
         
         let player2Arrow = svg.append('line')
             .attr('x1', 370)
@@ -158,6 +158,17 @@ export default class Filler extends Component {
             .attr("d", "M 0 0 12 6 0 12 3 6")
             .style("fill", "red");
         
+        svg.append('text')
+            .attr('x', this.props.width / 2)
+            .attr('y', 50)
+            .attr('text-anchor', 'middle')
+            .style('fill', textColor)
+            .style('font-size', titleSize)
+            .style('text-decoration', 'underline')
+            .text('Winner: Player ' + this.state.winner)
+            .attr('class', 'winner')
+            .style('visibility', 'hidden')
+        
         this.setState({playerArrows: [player1Arrow, player2Arrow]})
     }
 
@@ -180,19 +191,46 @@ export default class Filler extends Component {
         let updatedColors = this.state.currentPlayer ? [prevColors[0], color] : [color, prevColors[1]];
         this.changeOpacity(updatedColors)
         this.setState({prevColors: updatedColors})
+
+        let newBoxes;
+        let newScores;
         
-        if (this.state.currentPlayer) { // Player 2 
-            this.setState({playerBoxes: [playerBoxes[0], newIndices]});
-            this.setState({playerScores: [playerScores[0], newIndices.length]});
+        if (this.state.currentPlayer) { // Player 2
+            newBoxes = [playerBoxes[0], newIndices];
+            newScores = [playerScores[0], newIndices.length];
         } else { // Player 1
-            this.setState({playerBoxes: [newIndices, playerBoxes[1]]});
-            this.setState({playerScores: [newIndices.length, playerScores[1]]});
+            newBoxes = [newIndices, playerBoxes[1]];
+            newScores = [newIndices.length, playerScores[1]];
         }
+
+        this.setState({playerBoxes: newBoxes});
+        this.setState({playerScores: newScores});
         this.state.playerArrows[this.state.currentPlayer]
             .style('visibility', 'hidden')
         this.state.playerArrows[1 - this.state.currentPlayer]
             .style('visibility', 'visible')
         this.setState({currentPlayer: 1 - this.state.currentPlayer});
+        this.checkEndGame(newScores);
+    }
+
+    checkEndGame(newScores) {
+        console.log('SCORES');
+        console.log(newScores);
+        if (newScores[0] + newScores[1] === 100) {
+            let winner = (newScores[0] > newScores[1]) ? 1 : 2;
+            this.setState({winner: winner});
+            this.gameOver(winner)
+        }   
+    }
+
+    // Hide Arrows and Player Scores and Show Winner Text
+    gameOver(winner) {
+        [d3.select('.player2'), d3.select('.player1'), ...this.state.playerArrows].forEach((item) => {
+            item.style('visibility', 'hidden')
+        })
+        d3.select('.winner')
+            .text('Winner: Player ' + winner)
+            .style('visibility', 'visible')
     }
 
     getNewIndices(indices, inputColor) {
