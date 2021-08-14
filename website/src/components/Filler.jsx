@@ -77,7 +77,6 @@ export default class Filler extends Component {
             .attr('stroke', 'black')
             .on('click', (data) => {
                 if (data.target.__data__.flag) this.update(data.target.__data__.color)
-                else console.log("NOTHING: " + data.target.__data__.color)
             })
         
         let textColor = 'white';
@@ -114,8 +113,9 @@ export default class Filler extends Component {
 
         let newIndices = prevPlayer1Boxes.concat(this.getNewIndices(allIndices, color));
         newIndices = newIndices.filter((item, index) => newIndices.indexOf(item) === index);
-        console.log('NEW');
-        console.log(newIndices);
+
+        // Remove indices belonging to the other player
+        newIndices = newIndices.filter((item) => !this.state.playerBoxes[1 - this.state.currentPlayer].includes(item));
 
         let playerScores = this.state.playerScores;
         let playerBoxes = this.state.playerBoxes;
@@ -145,8 +145,6 @@ export default class Filler extends Component {
     }
 
     changeColor(rectIndices, color) {
-        console.log('CHANGE');
-        console.log(rectIndices);
         rectIndices.forEach((rectIndex) => {
             let rect = d3.selectAll('rect')._groups[0][rectIndex];
 
