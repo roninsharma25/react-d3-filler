@@ -97,7 +97,7 @@ export default class Filler extends Component {
             .attr('stroke', 'black')
             .attr('class', (data) => (data.className))
             .on('click', (data) => {
-                if (data.target.__data__.flag) this.update(data.target.__data__.color)
+                if (data.target.__data__.flag & d3.select(data.target).style('opacity')) this.update(data.target.__data__.color)
             })
         
         let textColor = 'white';
