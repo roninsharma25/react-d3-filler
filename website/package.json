@@ -1,6 +1,6 @@
 {
   "name": "website",
-  "homepage": "http://roninsharma25.github.io/website",
+  "homepage": "http://roninsharma25.github.io/react-d3-viz",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
