@@ -45,6 +45,7 @@ export default class Filler extends Component {
 
     generateData(dim, start, delta, size, flag = false) {
         let colors = ['red', 'blue', 'green', 'white', 'purple', 'orange', 'yellow'];
+        let board = this.generateBoardColors(dim[0]);
         let data = [];
         let x;
         let y = start[1];
@@ -54,7 +55,7 @@ export default class Filler extends Component {
         for (let i = 0; i < dim[0]; i++) {
             x = start[0];
             for (let j = 0; j < dim[1]; j++ ) {
-                color = flag ? colors[j] : colors[Math.floor(Math.random() * colors.length)];
+                color = flag ? colors[j] : board[i][j]; //colors[Math.floor(Math.random() * colors.length)];
                 className = flag ? 'bottom' : 'top';
                 data.push({'x': x, 'y': y, 'size': size, 'flag': flag, 'color': color, 'className': className});
                 x += delta[0];
@@ -89,6 +90,34 @@ export default class Filler extends Component {
                 .text('2')
         })
     }
+
+    generateBoardColors() {
+        let colors = ['red', 'blue', 'green', 'white', 'purple', 'orange', 'yellow'];
+        let dim = 10;
+
+        let colorsTemp;
+
+        let board = [...Array(dim)].map((arr) => Array(dim).fill(0));
+        board.forEach((arr, index1) => {
+            arr.forEach((ele, index2) => {
+                colorsTemp = [...colors]; // Create copy
+
+                // Remove left entry from temp list if it exists
+                if (index2 >= 1) colorsTemp = colorsTemp.filter((color) => {
+                    return color !== board[index1][index2-1];
+                })
+
+                // Remove above entry from temp list if it exists
+                if (index1 >= 1) colorsTemp = colorsTemp.filter((color) => {
+                    return color !== board[index1-1][index2];
+                })
+                // Chose a random color and update the board
+                board[index1][index2] = colorsTemp[Math.floor(Math.random() * colorsTemp.length)]
+            })
+        })
+
+        return board;
+    }
     
     main() {
         let data = this.generateData(...[[10, 10], [150, 75], [40, 40], 40]);
@@ -106,9 +135,6 @@ export default class Filler extends Component {
             .enter()
             .append('g')
 
-        //let squares = svg.selectAll('rect')
-        //    .data(data.concat(constantData))
-        //    .enter()
         groups.append('rect')
             .attr('x', (data) => (data.x))
             .attr('y', (data) => (data.y))
@@ -271,8 +297,6 @@ export default class Filler extends Component {
         d3.selectAll('rect')
             .on('click', null)
             .style('opacity', 1.0)
-        
-        
     }
 
     getNewIndices(indices, inputColor) {
