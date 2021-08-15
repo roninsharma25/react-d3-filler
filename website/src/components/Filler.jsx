@@ -13,9 +13,6 @@ export default class Filler extends Component {
             playerArrows: ['',''],
             winner: null
         }
-
-        this.changeColor = this.changeColor.bind(this);
-        this.getAdjacentIndices = this.getAdjacentIndices.bind(this);
     }
 
     componentDidMount() {
@@ -55,7 +52,7 @@ export default class Filler extends Component {
         for (let i = 0; i < dim[0]; i++) {
             x = start[0];
             for (let j = 0; j < dim[1]; j++ ) {
-                color = flag ? colors[j] : board[i][j]; //colors[Math.floor(Math.random() * colors.length)];
+                color = flag ? colors[j] : board[i][j];
                 className = flag ? 'bottom' : 'top';
                 data.push({'x': x, 'y': y, 'size': size, 'flag': flag, 'color': color, 'className': className});
                 x += delta[0];
@@ -185,9 +182,9 @@ export default class Filler extends Component {
             .attr('class', 'player2')
 
         let player1Arrow = svg.append('line')
-            .attr('x1', 25)
+            .attr('x1', 20)
             .attr('y1', 45)
-            .attr('x2', 75)
+            .attr('x2', 70)
             .attr('y2', 45)
             .attr('stroke-width', 5)
             .attr('stroke', 'white')
@@ -203,17 +200,17 @@ export default class Filler extends Component {
             .attr('marker-end', 'url(#triangle)')
             .style('visibility', 'hidden')
         
-        svg.append("svg:defs").append("svg:marker")
-            .attr("id", "triangle")
-            .attr("refX", 6)
-            .attr("refY", 6)
-            .attr("markerWidth", 30)
-            .attr("markerHeight", 30)
-            .attr("markerUnits", "userSpaceOnUse")
-            .attr("orient", "auto")
-            .append("path")
-            .attr("d", "M 0 0 12 6 0 12 3 6")
-            .style("fill", "red");
+        svg.append('svg:defs').append('svg:marker')
+            .attr('id', 'triangle')
+            .attr('refX', 10)
+            .attr('refY', 10)
+            .attr('markerWidth', 30)
+            .attr('markerHeight', 30)
+            .attr('markerUnits', 'userSpaceOnUse')
+            .attr('orient', 'auto')
+            .append('path')
+            .attr('d', 'M 0 0 20 10 0 20 Z')
+            .style('fill', 'red');
         
         svg.append('text')
             .attr('x', this.props.width / 2)
@@ -276,7 +273,7 @@ export default class Filler extends Component {
     checkEndGame(newScores) {
         let player1Score = newScores[0];
         let player2Score = newScores[1];
-        if (player1Score + player2Score === 10) {
+        if (player1Score + player2Score === 100) {
             let winner = (player1Score > player2Score) ? 1 : (player2Score > player1Score) ? 2 : 'tie';
             this.setState({winner: winner});
             this.gameOver(winner)
