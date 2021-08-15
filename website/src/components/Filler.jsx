@@ -267,6 +267,12 @@ export default class Filler extends Component {
                 return winner !== 'tie' ? 'Winner: Player ' + winner : 'Tie'
             })
             .style('visibility', 'visible')
+        
+        d3.selectAll('rect')
+            .on('click', null)
+            .style('opacity', 1.0)
+        
+        
     }
 
     getNewIndices(indices, inputColor) {
