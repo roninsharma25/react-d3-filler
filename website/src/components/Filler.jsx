@@ -28,7 +28,7 @@ export default class Filler extends Component {
 
     // Resets all opacities and changes the specified ones
     changeOpacity(changeColors) {
-        let colors = ['red', 'blue', 'green', 'black', 'purple', 'white', 'yellow'];
+        let colors = ['red', 'blue', 'green', 'white', 'purple', 'orange', 'yellow'];
         let allObjs = d3.selectAll('.bottom')._groups[0];
         colors.forEach((color, index) => {
             d3.select(allObjs[index])
@@ -44,7 +44,7 @@ export default class Filler extends Component {
     }
 
     generateData(dim, start, delta, size, flag = false) {
-        let colors = ['red', 'blue', 'green', 'black', 'purple', 'white', 'yellow'];
+        let colors = ['red', 'blue', 'green', 'white', 'purple', 'orange', 'yellow'];
         let data = [];
         let x;
         let y = start[1];
@@ -73,6 +73,22 @@ export default class Filler extends Component {
                 .text('Player 1 Score: ' + this.state.playerScores[0])
         }
     }
+
+    updateBoardText(newBoxes) {
+        let allObjs = d3.selectAll('.board')._groups[0];
+
+        newBoxes[0].forEach((index) => {
+            d3.select(allObjs[index])
+                .attr('visibility', 'visible')
+                .text('1')
+        })
+
+        newBoxes[1].forEach((index) => {
+            d3.select(allObjs[index])
+                .attr('visibility', 'visible')
+                .text('2')
+        })
+    }
     
     main() {
         let data = this.generateData(...[[10, 10], [150, 75], [40, 40], 40]);
@@ -84,13 +100,16 @@ export default class Filler extends Component {
             .attr('height', height)
             .attr('width', width)
             .style('border', border)
-
-        let squares = svg.selectAll('rect')
+        
+        let groups = svg.selectAll('.groups')
             .data(data.concat(constantData))
             .enter()
-            .append('rect')
-        
-        squares
+            .append('g')
+
+        //let squares = svg.selectAll('rect')
+        //    .data(data.concat(constantData))
+        //    .enter()
+        groups.append('rect')
             .attr('x', (data) => (data.x))
             .attr('y', (data) => (data.y))
             .attr('height', (data) => (data.size))
@@ -102,6 +121,18 @@ export default class Filler extends Component {
                 if (data.target.__data__.flag & d3.select(data.target).style('opacity')) this.update(data.target.__data__.color)
             })
         
+        groups.append('text')
+            .attr('x', (data) => (data.x + data.size/3))
+            .attr('y', (data) => (data.y + data.size*2/3))
+            .style('font-size', '20px')
+            .style('fill', 'black')
+            .text('1')
+            .attr('class', (data) => {
+                if (!data.flag) return 'board';
+                return 'stat';
+            })
+            .attr('visibility', 'hidden')
+
         let textColor = 'white';
         let titleSize = '25px';
 
@@ -170,14 +201,15 @@ export default class Filler extends Component {
             .style('visibility', 'hidden')
         
         this.setState({playerArrows: [player1Arrow, player2Arrow]})
+        this.updateBoardText(this.state.playerBoxes);
     }
 
     update(color) {
-        let prevPlayer1Boxes = this.state.playerBoxes[this.state.currentPlayer];
-        let allIndices = prevPlayer1Boxes;
+        let prevPlayerBoxes = this.state.playerBoxes[this.state.currentPlayer];
+        let allIndices = prevPlayerBoxes;
         allIndices.forEach(num => allIndices = allIndices.concat(this.getAdjacentIndices(num)));
 
-        let newIndices = prevPlayer1Boxes.concat(this.getNewIndices(allIndices, color));
+        let newIndices = prevPlayerBoxes.concat(this.getNewIndices(allIndices, color));
         newIndices = newIndices.filter((item, index) => newIndices.indexOf(item) === index);
 
         // Remove indices belonging to the other player
@@ -210,6 +242,8 @@ export default class Filler extends Component {
         this.state.playerArrows[1 - this.state.currentPlayer]
             .style('visibility', 'visible')
         this.setState({currentPlayer: 1 - this.state.currentPlayer});
+
+        this.updateBoardText(newBoxes)
         this.checkEndGame(newScores);
     }
 
