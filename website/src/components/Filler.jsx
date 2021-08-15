@@ -248,10 +248,10 @@ export default class Filler extends Component {
     }
 
     checkEndGame(newScores) {
-        console.log('SCORES');
-        console.log(newScores);
-        if (newScores[0] + newScores[1] === 100) {
-            let winner = (newScores[0] > newScores[1]) ? 1 : 2;
+        let player1Score = newScores[0];
+        let player2Score = newScores[1];
+        if (player1Score + player2Score === 10) {
+            let winner = (player1Score > player2Score) ? 1 : (player2Score > player1Score) ? 2 : 'tie';
             this.setState({winner: winner});
             this.gameOver(winner)
         }   
@@ -263,7 +263,9 @@ export default class Filler extends Component {
             item.style('visibility', 'hidden')
         })
         d3.select('.winner')
-            .text('Winner: Player ' + winner)
+            .text(() => {
+                return winner !== 'tie' ? 'Winner: Player ' + winner : 'Tie'
+            })
             .style('visibility', 'visible')
     }
 
