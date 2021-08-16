@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Button, ButtonGroup } from 'react-bootstrap';
 import '../App.css';
 import * as d3 from 'd3';
 
@@ -350,7 +351,17 @@ export default class Filler extends Component {
 
     render() {
         return (
-            <div className="Vis"></div>
+            <div className="Vis">
+                <div className='Navbar'>
+                    <ButtonGroup aria-label="Basic example" size="lg">
+                        <Button variant="primary">Home</Button>
+                        <Button variant="primary">Filler</Button>
+                        <Button variant="primary">Messaging</Button>
+                    </ButtonGroup>
+
+
+                </div>
+            </div>
         )
     }
           
